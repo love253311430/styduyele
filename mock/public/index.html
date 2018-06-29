@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.js"></script>
+    <script type="text/javascript">
+      $(function(){
+        $('.search').click(function(){
+             getlist()
+       });
+       $(document).on("click",'.edit',function(){
+         var id=$(this).attr('data-id');
+         $.ajax({
+         type:"GET",
+         url:'getuser?_id='+id,
+         async:true,
+         dataType:'json',
+         success:function(result){
+           var jsonr=result ;
+           var name=jsonr[0].userName ;
+          var age=jsonr[0].age ;
+          var sex=jsonr[0].sex ;
+          var _id=jsonr[0]._id ;
+          $('#name').val(name);
+          $('#age').val(age);
+          $('#sex').val(sex);
+          $('#_id').val(_id);
+         },
+          });
+       });
+       $(document).on("click",'.dele',function(){
+         var id=$(this).attr('data-id');
+         $.ajax({
+         type:"GET",
+         url:'delete?_id='+id,
+         async:true,
+         dataType:'json',
+         success:function(result){
+          getlist()
+         },
+          });
+       });
+
+       $('.editsave').click(function(){
+         var name=$('#name').val();
+         var age=$('#age').val();
+         var sex=$('#sex').val();
+         var id=  $('#_id').val();
+         if(name!=''&&age!=''&&sex!=''){
+           $.ajax({
+           type:"GET",
+           url:'saveupdate?userName='+name+'&age='+age+'&sex='+sex+'&_id='+id,
+           async:true,
+           dataType:'json',
+           success:function(result){
+                 getlist()
+           },
+            });
+         }
+       })
+       $('.add').click(function(){
+          var name=$('#name').val();
+          var age=$('#age').val();
+          var sex=$('#sex').val();
+          if(name!=''&&age!=''&&sex!=''){
+            $.ajax({
+            type:"GET",
+            url:'saveuser?userName='+name+'&age='+age+'&sex='+sex,
+            async:true,
+            dataType:'json',
+            success:function(result){
+                  getlist()
+            },
+             });
+          }
+       })
+       function getlist(){
+         $('input').val('');
+         $.ajax({
+         type:"GET",
+         url:'getuser',
+         async:true,
+         dataType:'json',
+         success:function(result){
+           var jsonr=result ;
+           var html='';
+           for(var i=0;i<jsonr.length;i++){
+             html+='<tr>'
+                 +'<td>'
+                 +jsonr[i].userName
+                 +'</td>'
+                 +'<td>'
+                 +jsonr[i].age
+                 +'</td>'
+                 +'<td>'
+                 +jsonr[i].sex
+                 +'</td>'
+                 +'<td>'
+                 +'<div class="btn-toolbar" role="toolbar" aria-label="...">'
+                    +'<div class="btn-group edit" style="color:blue;cursor:pointer;" role="group" aria-label="..." data-id='+jsonr[i]._id+'>编辑</div>'
+                    +'<div class="btn-group dele" style="color:blue;cursor:pointer;" role="group" aria-label="..." data-id='+jsonr[i]._id+'>删除</div>'
+                 +'</div>'
+                 +'</td>'
+           }
+           $('.list').html(html);
+         },
+          });
+       }
+      });
+    </script>
+  </head>
+  <body>
+      <button type="button" class="btn btn-primary search">查询</button>
+    <table class="table table-striped">
+     <thead>
+       <tr>
+
+         <th>姓名</th>
+         <th>年龄</th>
+         <th>性别</th>
+         <th>操作</th>
+       </tr>
+     </thead>
+     <tbody class="list">
+
+     </tbody>
+   </table>
+     <button type="button" class="btn btn-primary add">添加</button>
+      <button type="button" class="btn btn-primary editsave">编辑保存</button>
+   <form>
+  <div class="form-group">
+    <label for="exampleInputEmail1">姓名</label>
+    <input type="text" class="form-control" id="name" >
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">年龄</label>
+    <input type="text" class="form-control" id="age" >
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">性别</label>
+    <input type="text" class="form-control" id="sex" >
+  </div>
+  <input type="hidden" id="_id" />
+</form>
+  </body>
+</html>
